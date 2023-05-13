@@ -82,15 +82,14 @@ string typeMA2 = input.string("WMA", "Moving Average Type", ["SMA", "EMA", "SMMA
 sma1input = input.int(7, "Short SMA Period 1", minval = 1, maxval = 4999, step = 1, group = "Short MA Periods")
 sma2input = input.int(9, "Short SMA Period 2", minval = 1, maxval = 4999, step = 1, group = "Short MA Periods")
 sma3input = input.int(30, "Long SMA Period 1", minval = 1, maxval = 4999, step = 1, group = "Long MA Periods")
-sma4input = input.int(50, "Long SMA Period 2", minval = 1, maxval = 4999, step = 1, group = "Long MA Periods")
-sma5input = input.int(100, "Long SMA Period 3", minval = 1, maxval = 4999, step = 1, group = "Long MA Periods")
-sma6input = input.int(200, "Long SMA Period 4", minval = 1, maxval = 4999, step = 1, group = "Long MA Periods")
+sma4input = input.int(100, "Long SMA Period 2", minval = 1, maxval = 4999, step = 1, group = "Long MA Periods")
+sma5input = input.int(200, "Long SMA Period 3", minval = 1, maxval = 4999, step = 1, group = "Long MA Periods")
 float sma1 = ma2(close, sma1input, typeMA2)
 float sma2 = ma2(close, sma2input, typeMA2)
 float sma3 = ma2(close, sma3input, typeMA2)
 float sma4 = ma2(close, sma4input, typeMA2)
 float sma5 = ma2(close, sma5input, typeMA2)
-float sma6 = ma2(close, sma6input, typeMA2)
+
 
 bool intradaymas = input.bool(true, "Intraday Average Active", group = "Switches")
 bool trendmas = input.bool(true, "Macro Trend Average Active", group = "Switches")
@@ -100,9 +99,9 @@ int smoothingLength3 = input.int(100, "Macro Trend MA Smoothing", minval = 1, ma
 
 smoothingLine1 = ma(sma1, smoothingLength1, typeMA)
 smoothingLine2 = ma(sma2, smoothingLength1, typeMA)
+smoothingLine3 = ma(sma3, smoothingLength3, typeMA)
 smoothingLine4 = ma(sma4, smoothingLength3, typeMA)
 smoothingLine5 = ma(sma5, smoothingLength3, typeMA)
-smoothingLine6 = ma(sma6, smoothingLength3, typeMA)
 
 
 //TABLE DEFINITIONS
@@ -170,9 +169,9 @@ if barstate.islast and highlow == true
 //PLOTS
 plot(intradaymas ? smoothingLine1 : na, title = "Short MA 1", style = plot.style_linebr, color = color.new(#26c6da, 0))
 plot(intradaymas ? smoothingLine2 : na, title = "Short MA 2", style = plot.style_linebr, color = color.new(#c526da, 0))
-plot(trendmas ? smoothingLine4 : na, title = "Long MA 1", style = plot.style_linebr, color = color.new(#6cffe6, 0))
-plot(trendmas ? smoothingLine5 : na, title = "Long MA 2", style = plot.style_linebr, color = color.new(#ffeb3b, 0))
-plot(trendmas ? smoothingLine6 : na, title = "Long MA 3", style = plot.style_linebr, color = color.new(#ff6d00, 0))
+plot(trendmas ? smoothingLine3 : na, title = "Long MA 1", style = plot.style_linebr, color = color.new(#6cffe6, 0))
+plot(trendmas ? smoothingLine4 : na, title = "Long MA 2", style = plot.style_linebr, color = color.new(#ffeb3b, 0))
+plot(trendmas ? smoothingLine5 : na, title = "Long MA 3", style = plot.style_linebr, color = color.new(#ff6d00, 0))
 
 alertcondition(ta.cross(close, _entrylong), "Long Position", string("The price has crossed your Long Entry"))
 alertcondition(ta.cross(close, _entryshort), "Short Position", string("The price has crossed your Short Entry"))
