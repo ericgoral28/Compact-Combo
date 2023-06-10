@@ -5,8 +5,7 @@
 indicator("Compact Combo", "CC", overlay = true, max_bars_back = 500)
 
 //REQUESTS
-tickvalue = syminfo.mintick
-_value = (close * tickvalue)
+totalvalue = volume * close
 
 [o1] = request.security(syminfo.tickerid, "D", expression = [open[1]]) //24 hours
 [o2, h1, l1] = request.security(syminfo.tickerid, "D", [open, high, low]) //Day
@@ -164,13 +163,13 @@ table.cell(table1, 0, 1, string("Timeframe: "), text_color = color.white, text_s
 table.cell(table1, 1, 1, str.tostring(timeframe.period), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
 
 table.cell(table1, 0, 2, string("Current Price: "), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table1, 1, 2, string("$") + str.tostring(close, "###,###,###,###.####################"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+table.cell(table1, 1, 2, string("$") + str.tostring(close, "###,###,###,###.################"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
 
 table.cell(table1, 0, 3, string("Share Volume: "), text_color = color.white, text_size = _phone ? size.small :  size.normal, text_halign = text.align_left)
 table.cell(table1, 1, 3, str.tostring(volume, "###,###,###,###.###"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
 
 table.cell(table1, 0, 4, string("Total Bar $ Value: "), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table1, 1, 4, close >= open ? str.tostring(_value, "$###,###,###,###,###.################") : str.tostring(_value, "$###,###,###,###,###.################"), text_color = close >= open ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+table.cell(table1, 1, 4, close >= open ? str.tostring(totalvalue, "$###,###,###,###,###.##") : str.tostring(totalvalue, "$###,###,###,###,###.##"), text_color = close >= open ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
 
 //TABLE 2
 table.cell(table2, 0, 0, 
