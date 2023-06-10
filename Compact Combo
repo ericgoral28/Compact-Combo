@@ -5,15 +5,18 @@
 indicator("Compact Combo", "CC", overlay = true, max_bars_back = 500)
 
 //REQUESTS
-_value = (close * volume)
+tickvalue = syminfo.mintick
+_value = (close * tickvalue)
 
-[o1] = request.security(syminfo.tickerid, "D", [open[1]]) //24 hours
+[o1] = request.security(syminfo.tickerid, "D", expression = [open[1]]) //24 hours
 [o2, h1, l1] = request.security(syminfo.tickerid, "D", [open, high, low]) //Day
 [o3] = request.security(syminfo.tickerid, "D", [open[3]]) //72 hours
 [o4] = request.security(syminfo.tickerid, "D", [open[7]]) //7 Days
 [o5] = request.security(syminfo.tickerid, "D", [open[30]]) //30 Days
-[o7] = request.security(syminfo.tickerid, "D", [open[365]]) //Year
-[o6] = request.security(syminfo.tickerid, "12M", [open]) //YTD
+[o6] = request.security(syminfo.tickerid, "D", [open[365]]) //Year
+[o7] = request.security(syminfo.tickerid, "12M", [open]) //YTD
+[o8] = request.security(syminfo.tickerid, "D", [open[90]]) //3 Month
+[o9] = request.security(syminfo.tickerid, "D", [open[180]]) //6 Month
 _change1 = (close / o1) - 1
 _change2 = (close / o2) - 1
 _change3 = (close / o3) - 1
@@ -21,6 +24,8 @@ _change4 = (close / o4) - 1
 _change5 = (close / o5) - 1
 _change6 = (close / o6) - 1
 _change7 = (close / o7) - 1
+_change8 = (close / o8) - 1
+_change9 = (close / o9) - 1
 //VARIABLES
 var label lbl_1 = na 
 var label lbl_2 = na 
@@ -165,7 +170,7 @@ table.cell(table1, 0, 3, string("Share Volume: "), text_color = color.white, tex
 table.cell(table1, 1, 3, str.tostring(volume, "###,###,###,###.###"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
 
 table.cell(table1, 0, 4, string("Total Bar $ Value: "), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table1, 1, 4, close >= open ? str.tostring(_value, "$###,###,###.###") : str.tostring(_value, "$###,###,###.###"), text_color = close >= open ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+table.cell(table1, 1, 4, close >= open ? str.tostring(_value, "$###,###,###,###,###.################") : str.tostring(_value, "$###,###,###,###,###.################"), text_color = close >= open ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
 
 //TABLE 2
 table.cell(table2, 0, 0, 
@@ -178,7 +183,7 @@ table.cell(table2, 1, 1, string(" Day"), text_color = color.white, text_size = _
 
 table.cell(table2, 0, 2, 
  close >= o3 ? string("△ ") + str.tostring(_change3, "+#.##%") : string("▽ ") + str.tostring(_change3, "#.##%"), text_color = close >= o3 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table2, 1, 2, string(" 72-Hour"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+table.cell(table2, 1, 2, string(" 3 Day"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
 
 table.cell(table2, 0, 3, 
  close >= o4 ? string("△ ") + str.tostring(_change4, "+#.##%") : string("▽ ") + str.tostring(_change4, "#.##%"), text_color = close >= o4 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
@@ -189,12 +194,22 @@ table.cell(table2, 0, 4,
 table.cell(table2, 1, 4, string(" 30 Day"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
 
 table.cell(table2, 0, 5,  
- close >= o7 ? string("△ ") + str.tostring(_change7, "+#.##%") : string("▽ ") + str.tostring(_change7, "#.##%"), text_color = close >= o7 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table2, 1, 5, string(" Year"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+ close >= o8 ? string("△ ") + str.tostring(_change8, "+#.##%") : string("▽ ") + str.tostring(_change8, "#.##%"), text_color = close >= o8 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+table.cell(table2, 1, 5, string(" 90 Day"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
 
 table.cell(table2, 0, 6,  
+ close >= o9 ? string("△ ") + str.tostring(_change9, "+#.##%") : string("▽ ") + str.tostring(_change9, "#.##%"), text_color = close >= o9 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+table.cell(table2, 1, 6, string(" 180 Day"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+
+table.cell(table2, 0, 7,  
  close >= o6 ? string("△ ") + str.tostring(_change6, "+#.##%") : string("▽ ") + str.tostring(_change6, "#.##%"), text_color = close >= o6 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table2, 1, 6, string(" YTD"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+table.cell(table2, 1, 7, string(" Year"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+
+table.cell(table2, 0, 8,  
+ close >= o7 ? string("△ ") + str.tostring(_change7, "+#.##%") : string("▽ ") + str.tostring(_change7, "#.##%"), text_color = close >= o7 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+table.cell(table2, 1, 8, string(" YTD"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+
+//DAILY HIGH/LOW
 if barstate.islast and highlow == true
 
     _line5 := line.new(bar_index-25, h1, bar_index + 3, h1, xloc=xloc.bar_index, extend=extend.none, color=color.red, style=line.style_solid, width=1)
