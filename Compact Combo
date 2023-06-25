@@ -5,17 +5,19 @@
 indicator("Compact Combo", "CC", overlay = true, max_bars_back = 500)
 
 //REQUESTS
-totalvalue = volume * close
-
-[o1] = request.security(syminfo.tickerid, "D", expression = [open[1]]) //24 hours
-[o2, h1, l1] = request.security(syminfo.tickerid, "D", [open, high, low]) //Day
-[o3] = request.security(syminfo.tickerid, "D", [open[3]]) //72 hours
-[o4] = request.security(syminfo.tickerid, "D", [open[7]]) //7 Days
-[o5] = request.security(syminfo.tickerid, "D", [open[30]]) //30 Days
+[h1, l1] = request.security(syminfo.tickerid, input.timeframe("D", "High/Low Timeframe",["D", "W", "M", "3M", "6M", "12M"]), [high[1],low[1]])
+[o1] = request.security(syminfo.tickerid, "1", [open[1440]]) //24 hours
+[o2] = request.security(syminfo.tickerid, "D", [open]) //Day
+[o3] = request.security(syminfo.tickerid, "1", [open[4320]]) //72 hours
+[o4] = request.security(syminfo.tickerid, "3", [open[3360]]) //7 Days
+[o5] = request.security(syminfo.tickerid, "15", [open[2880]]) //30 Days
 [o6] = request.security(syminfo.tickerid, "D", [open[365]]) //Year
 [o7] = request.security(syminfo.tickerid, "12M", [open]) //YTD
-[o8] = request.security(syminfo.tickerid, "D", [open[90]]) //3 Month
-[o9] = request.security(syminfo.tickerid, "D", [open[180]]) //6 Month
+[o8] = request.security(syminfo.tickerid, "30", [open[4320]]) //3 Month
+[o9] = request.security(syminfo.tickerid, "60", [open[4320]]) //6 Month
+
+//VARIABLES
+_totalvalue = volume * close
 _change1 = (close / o1) - 1
 _change2 = (close / o2) - 1
 _change3 = (close / o3) - 1
@@ -25,18 +27,20 @@ _change6 = (close / o6) - 1
 _change7 = (close / o7) - 1
 _change8 = (close / o8) - 1
 _change9 = (close / o9) - 1
-//VARIABLES
-var label lbl_1 = na 
-var label lbl_2 = na 
-var label lbl_3 = na
-var label lbl_4 = na
-var label lbl_5 = na
-var label lbl_6 = na
-var label lbl_7 = na
-var label lbl_8 = na
-var label lbl_9 = na
-var label lbl_10 = na
 
+//LABELS
+var label _lbl_1 = na
+var label _lbl_2 = na 
+var label _lbl_3 = na
+var label _lbl_4 = na
+var label _lbl_5 = na
+var label _lbl_6 = na
+var label _lbl_7 = na
+var label _lbl_8 = na
+var label _lbl_9 = na
+var label _lbl_10 = na
+
+//LINES
 var line _line1 = na
 var line _line2 = na
 var line _line3 = na
@@ -48,68 +52,91 @@ var line _line8 = na
 var line _line9 = na
 var line _line10 = na
 
+//BOOLEAN
 var bool _phone = input.bool(false, "Phone View", string("This is for use on phones. If activated, it will decrease the size of the font on the tables."), group = "Switches")
 var bool intradaymas = input.bool(true, "Intraday Average Active", group = "Switches", tooltip = string("This is linked to the two intraday moving averages"))
 var bool trendmas = input.bool(true, "Macro Trend Average Active", group = "Switches", tooltip = string("This is linked to the three macrotrend moving averages"))
 var bool _showtrade = input.bool(true, "Show Your Trade Moves?", group = "Switches", tooltip = string("Activate/Deactivate Trade Lines"))
-bool highlow = input.bool(false, "Daily High/Low Active", group = "Switches")
+var bool _highlow = input.bool(false, "High/Low Active", group = "Switches")
 
-//TRADE INFO
+//LEVERAGE
+var int _leverage = input.int(1, "Leverage", minval = 1, maxval = 500, step = 1, tooltip = string("This will adjust the percentages on your entry lines"), group = "Trade Settings")
+
+//LONG
 var float _entrylong = input.float(0, title= "Long Entry", minval=0.000, step=0.001, group="Long Trade Settings", tooltip = string("Label shows percent from long entry to current price"))
-var float _entrylongstoploss = input.float(0, title= "Long Stop Loss", minval=0.000, step=0.001, group="Long Trade Settings", tooltip = string("Label shows percent from long entry to long stop-loss"))
-var float _entrylongtakeprofit = input.float(0, title= "Long Take Profit", minval=0.000, step=0.001, group="Long Trade Settings", tooltip = string("Label shows percent from long entry to long take-profit"))
+var float _stoplosslong = input.float(0, title= "Long Stop Loss", minval=0.000, step=0.001, group="Long Trade Settings", tooltip = string("Label shows percent from long entry to long stop-loss"))
+var float _takeprofitlong = input.float(0, title= "Long Take Profit", minval=0.000, step=0.001, group="Long Trade Settings", tooltip = string("Label shows percent from long entry to long take-profit"))
 var float _liquidationlong = input.float(0, title = "Long Liquidation", minval = 0.000, step = 0.001, group="Long Trade Settings", tooltip = string("Label shows percent from long entry to long liquidation"))
 
+//SHORT
 var float _entryshort = input.float(0, title= "Short Entry", minval=0.000, step=0.001, group="Short Trade Settings", tooltip = string("Label shows percent from short entry to current price"))
-var float _entryshortstoploss = input.float(0, title= "Short Stop Loss", minval=0.000, step=0.001, group="Short Trade Settings", tooltip = string("Label shows percent from short entry to short stop-loss"))
-var float _entryshorttakeprofit = input.float(0, title= "Short Take Profit", minval=0.000, step=0.001, group="Short Trade Settings", tooltip = string("Label shows percent from short entry to short take-profit"))
+var float _stoplossshort = input.float(0, title= "Short Stop Loss", minval=0.000, step=0.001, group="Short Trade Settings", tooltip = string("Label shows percent from short entry to short stop-loss"))
+var float _takeprofitshort = input.float(0, title= "Short Take Profit", minval=0.000, step=0.001, group="Short Trade Settings", tooltip = string("Label shows percent from short entry to short take-profit"))
 var float _liquidationshort = input.float(0, title = "Short Liquidation", minval = 0.000, step = 0.001, group="Short Trade Settings", tooltip = string("Label shows percent from short entry to short liquidation"))
+
+
+//PERCENTILE
+var float _percentlong = na
+var float _percentshort = na 
+
+//PERCENTILE LONG
+if _leverage > 1
+    _percentlong := ((((close / _entrylong) -1) * 0.01) * _leverage) / 0.01
+else
+    _percentlong := (close / _entrylong) -1
+
+//PERCENTILE SHORT
+if _leverage > 1
+    _percentshort := ((((close / _entryshort) -1) * 0.01) * _leverage) / 0.01
+else
+    _percentshort := (close/ _entryshort) -1
+
 
 //LONG ENTRY
 if _entrylong and _showtrade == true
     _line1 := line.new(bar_index-25, _entrylong, bar_index + 3, _entrylong, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,0,255,0), style=line.style_dotted, width=2)
     line.delete(_line1[1])
-    lbl_1 := label.new(bar_index + 4, _entrylong, string("Long Entry") + string(" ") + string("(") + str.tostring((close / _entrylong) -1, "#.##%") + string(" ") + string("To Current Price") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
-    label.delete(lbl_1[1])
-if _entrylongtakeprofit and _showtrade == true
-    _line7 := line.new(bar_index-25, _entrylongtakeprofit, bar_index + 3, _entrylongtakeprofit, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,255,0,0), style=line.style_dotted, width=2)
+    _lbl_1 := label.new(bar_index + 4, _entrylong, string("Long Entry") + string(" ") + string("(") + str.tostring(_percentlong, "#.##%") + string(" ") + string("To Current Price") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _phone ? size.tiny : size.small)
+    label.delete(_lbl_1[1])
+if _takeprofitlong and _showtrade == true
+    _line7 := line.new(bar_index-25, _takeprofitlong, bar_index + 3, _takeprofitlong, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,255,0,0), style=line.style_dotted, width=2)
     line.delete(_line7[1])
-    lbl_7 := label.new(bar_index + 4, _entrylongtakeprofit, string("Long Take Profit") + string(" ") + string("(") + str.tostring((_entrylongtakeprofit / _entrylong) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
-    label.delete(lbl_7[1])
-if _entrylongstoploss and _showtrade == true
-    _line9 := line.new(bar_index-25, _entrylongstoploss, bar_index + 3, _entrylongstoploss, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(255,0,0,0), style=line.style_dotted, width=2)
+    _lbl_7 := label.new(bar_index + 4, _takeprofitlong, string("Long Take Profit") + string(" ") + string("(") + str.tostring((_takeprofitlong / _entrylong) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
+    label.delete(_lbl_7[1])
+if _stoplosslong and _showtrade == true
+    _line9 := line.new(bar_index-25, _stoplosslong, bar_index + 3, _stoplosslong, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(255,0,0,0), style=line.style_dotted, width=2)
     line.delete(_line9[1])
-    lbl_9 := label.new(bar_index + 4, _entrylongstoploss, string("Long Stop Loss") + string(" ") + string("(") + str.tostring((_entrylongstoploss / _entrylong) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
-    label.delete(lbl_9[1])
+    _lbl_9 := label.new(bar_index + 4, _stoplosslong, string("Long Stop Loss") + string(" ") + string("(") + str.tostring((_stoplosslong / _entrylong) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
+    label.delete(_lbl_9[1])
 if _liquidationlong and _showtrade == true
     _line3 := line.new(bar_index-25, _liquidationlong, bar_index + 3, _liquidationlong, xloc = xloc.bar_index, extend = extend.none, color = color.purple, style=line.style_dotted, width = 2)
     line.delete(_line3[1])
-    lbl_3 := label.new(bar_index + 4, _liquidationlong, string("Long Liquidation") + string(" ") + string("(") + str.tostring((_liquidationlong / _entrylong) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
-    label.delete(lbl_3[1])
+    _lbl_3 := label.new(bar_index + 4, _liquidationlong, string("Long Liquidation") + string(" ") + string("(") + str.tostring((_liquidationlong / _entrylong) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _phone ? size.tiny : size.small)
+    label.delete(_lbl_3[1])
 
 //SHORT ENTRY
 if _entryshort and _showtrade == true
     _line2 := line.new(bar_index-25, _entryshort, bar_index + 3, _entryshort, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,0,255,0), style=line.style_dotted, width=2)
     line.delete(_line2[1])
-    lbl_2 := label.new(bar_index + 4, _entryshort, string("Short Entry") + string(" ") + string("(") + str.tostring((close/ _entryshort) -1, "#.##%") + string(" ") + string("To Current Price") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
-    label.delete(lbl_2[1])
-if _entryshorttakeprofit and _showtrade == true
-    _line8 := line.new(bar_index-25, _entryshorttakeprofit, bar_index + 3, _entryshorttakeprofit, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,255,0,0), style=line.style_dotted, width=2)
+    _lbl_2 := label.new(bar_index + 4, _entryshort, string("Short Entry") + string(" ") + string("(") + str.tostring(_percentshort, "#.##%") + string(" ") + string("To Current Price") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _phone ? size.tiny : size.small)
+    label.delete(_lbl_2[1])
+if _takeprofitshort and _showtrade == true
+    _line8 := line.new(bar_index-25, _takeprofitshort, bar_index + 3, _takeprofitshort, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,255,0,0), style=line.style_dotted, width=2)
     line.delete(_line8[1])
-    lbl_8 := label.new(bar_index + 4, _entryshorttakeprofit, string("Short Take Profit") + string(" ") + string("(") + str.tostring((_entryshorttakeprofit/ _entryshort) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
-    label.delete(lbl_8[1])
-if _entryshortstoploss and _showtrade == true
-    _line10 := line.new(bar_index-25, _entryshortstoploss, bar_index + 3, _entryshortstoploss, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(255,0,0,0), style=line.style_dotted, width=2)
+    _lbl_8 := label.new(bar_index + 4, _takeprofitshort, string("Short Take Profit") + string(" ") + string("(") + str.tostring((_takeprofitshort/ _entryshort) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
+    label.delete(_lbl_8[1])
+if _stoplossshort and _showtrade == true
+    _line10 := line.new(bar_index-25, _stoplossshort, bar_index + 3, _stoplossshort, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(255,0,0,0), style=line.style_dotted, width=2)
     line.delete(_line10[1])
-    lbl_10 := label.new(bar_index + 4, _entryshortstoploss, string("Short Stop Loss") + string(" ") + string("(") + str.tostring((_entryshortstoploss/ _entryshort) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
-    label.delete(lbl_10[1])
+    _lbl_10 := label.new(bar_index + 4, _stoplossshort, string("Short Stop Loss") + string(" ") + string("(") + str.tostring((_stoplossshort/ _entryshort) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
+    label.delete(_lbl_10[1])
 if _liquidationshort and _showtrade == true
     _line4 := line.new(bar_index-25, _liquidationshort, bar_index + 3, _liquidationshort, xloc = xloc.bar_index, extend = extend.none, color = color.purple, style=line.style_dotted, width = 2)
     line.delete(_line4[1])
-    lbl_4 := label.new(bar_index + 4, _liquidationshort, string("Short Liquidation") + string(" ") + string("(") + str.tostring((_liquidationshort/ _entryshort) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
-    label.delete(lbl_4[1])
+    _lbl_4 := label.new(bar_index + 4, _liquidationshort, string("Short Liquidation") + string(" ") + string("(") + str.tostring((_liquidationshort/ _entryshort) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _phone ? size.tiny : size.small)
+    label.delete(_lbl_4[1])
 
-//MOVING AVERAGE FUNCTIONS
+//MOVING AVERAGEs
 string typeMA2 = input.string("WMA", "Moving Average Type", ["SMA", "EMA", "SMMA (RMA)", "WMA", "VWMA"], group = "MA Type Settings")
 string typeMA = input.string("WMA", "Smoothing Type", ["SMA", "EMA", "SMMA (RMA)", "WMA", "VWMA"], group = "MA Smoothing Settings")
 
@@ -131,9 +158,11 @@ ma2(source, length, type) =>
 
 sma1input = input.int(7, "Intraday MA Period 1", minval = 1, maxval = 4999, step = 1, group = "Intraday MA Periods")
 sma2input = input.int(9, "Intraday MA Period 2", minval = 1, maxval = 4999, step = 1, group = "Intraday MA Periods")
+
 sma3input = input.int(30, "Macrotrend MA Period 1", minval = 1, maxval = 4999, step = 1, group = "Macrotrend MA Periods")
 sma4input = input.int(100, "Macrotrend MA Period 2", minval = 1, maxval = 4999, step = 1, group = "Macrotrend MA Periods")
 sma5input = input.int(200, "Macrotrend MA Period 3", minval = 1, maxval = 4999, step = 1, group = "Macrotrend MA Periods")
+
 float sma1 = ma2(close, sma1input, typeMA2)
 float sma2 = ma2(close, sma2input, typeMA2)
 float sma3 = ma2(close, sma3input, typeMA2)
@@ -141,7 +170,7 @@ float sma4 = ma2(close, sma4input, typeMA2)
 float sma5 = ma2(close, sma5input, typeMA2)
 
 int smoothingLength1 = input.int(5, "Intraday MA Smoothing", minval = 1, maxval = 4999, step = 1, group = "MA Smoothing Settings", tooltip = string("This smoothing length is linked to the two intraday moving averages."))
-int smoothingLength3 = input.int(100, "Macro Trend MA Smoothing", minval = 1, maxval = 4999, step = 1, group = "MA Smoothing Settings", tooltip = string("Thissmoothing length is linked to the three macrotrend moving averages."))
+int smoothingLength3 = input.int(100, "Macrotrend MA Smoothing", minval = 1, maxval = 4999, step = 1, group = "MA Smoothing Settings", tooltip = string("This smoothing length is linked to the three macrotrend moving averages."))
 
 smoothingLine1 = ma(sma1, smoothingLength1, typeMA)
 smoothingLine2 = ma(sma2, smoothingLength1, typeMA)
@@ -156,77 +185,79 @@ table2 = table.new(position.top_right, 12, 12, bgcolor = color.rgb(0,0,0,100),
  frame_color = na, frame_width = 1, border_color = na, border_width = 1)
 
  //TABLE 1
-table.cell(table1, 0, 0, string("TickerID: "), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table1, 1, 0, str.tostring(syminfo.ticker), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+table.cell(table1, 0, 0, string("TickerID: "), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
+table.cell(table1, 1, 0, str.tostring(syminfo.ticker), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
 
-table.cell(table1, 0, 1, string("Timeframe: "), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table1, 1, 1, str.tostring(timeframe.period), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+table.cell(table1, 0, 1, string("Timeframe: "), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
+table.cell(table1, 1, 1, str.tostring(timeframe.period), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
 
-table.cell(table1, 0, 2, string("Current Price: "), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table1, 1, 2, string("$") + str.tostring(close, "###,###,###,###.################"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+table.cell(table1, 0, 2, string("Current Price: "), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
+table.cell(table1, 1, 2, string("$") + str.tostring(close, "###,###,###,###.################"), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
 
-table.cell(table1, 0, 3, string("Share Volume: "), text_color = color.white, text_size = _phone ? size.small :  size.normal, text_halign = text.align_left)
-table.cell(table1, 1, 3, str.tostring(volume, "###,###,###,###.###"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+table.cell(table1, 0, 3, string("Share Volume: "), text_color = color.white, text_size = _phone ? size.tiny :  size.small, text_halign = text.align_left)
+table.cell(table1, 1, 3, str.tostring(volume, "###,###,###,###.###"), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
 
-table.cell(table1, 0, 4, string("Total Bar $ Value: "), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table1, 1, 4, close >= open ? str.tostring(totalvalue, "$###,###,###,###,###.##") : str.tostring(totalvalue, "$###,###,###,###,###.##"), text_color = close >= open ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+table.cell(table1, 0, 4, string("Total Bar $ Value: "), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
+table.cell(table1, 1, 4, close >= open ? str.tostring(_totalvalue, "$###,###,###,###,###.##") : str.tostring(_totalvalue, "$###,###,###,###,###.##"), text_color = close >= open ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
 
 //TABLE 2
-table.cell(table2, 0, 0, 
- close >= o1 ? string("△ ") + str.tostring(_change1, "+#.##%") : string("▽ ") + str.tostring(_change1, "#.##%"), text_color = close >= o1 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table2, 1, 0, string(" 24-Hour"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-
+table.cell(table2, 0, 0,
+ string("Rolling Percentages"), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_right)
+table.cell(table2, 0, 8,
+ string("Static Percentages"), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_right)
 table.cell(table2, 0, 1, 
- close >= o2 ? string("△ ") + str.tostring(_change2, "+#.##%") : string("▽ ") + str.tostring(_change2, "#.##%"), text_color = close >= o2 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table2, 1, 1, string(" Day"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+ close >= o1 ? string("△ ") + str.tostring(_change1, "+#.##%") : string("▽ ") + str.tostring(_change1, "#.##%"), text_color = close >= o1 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
+table.cell(table2, 1, 1, string(" 24-Hour"), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
+
+table.cell(table2, 0, 9, 
+ close >= o2 ? string("△ ") + str.tostring(_change2, "+#.##%") : string("▽ ") + str.tostring(_change2, "#.##%"), text_color = close >= o2 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
+table.cell(table2, 1, 9, string(" Day"), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
 
 table.cell(table2, 0, 2, 
- close >= o3 ? string("△ ") + str.tostring(_change3, "+#.##%") : string("▽ ") + str.tostring(_change3, "#.##%"), text_color = close >= o3 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table2, 1, 2, string(" 3 Day"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+ close >= o3 ? string("△ ") + str.tostring(_change3, "+#.##%") : string("▽ ") + str.tostring(_change3, "#.##%"), text_color = close >= o3 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
+table.cell(table2, 1, 2, string(" 3 Day"), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
 
 table.cell(table2, 0, 3, 
- close >= o4 ? string("△ ") + str.tostring(_change4, "+#.##%") : string("▽ ") + str.tostring(_change4, "#.##%"), text_color = close >= o4 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table2, 1, 3, string(" 7 Day"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+ close >= o4 ? string("△ ") + str.tostring(_change4, "+#.##%") : string("▽ ") + str.tostring(_change4, "#.##%"), text_color = close >= o4 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
+table.cell(table2, 1, 3, string(" 7 Day"), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
 
 table.cell(table2, 0, 4, 
- close >= o5 ? string("△ ") + str.tostring(_change5, "+#.##%") : string("▽ ") + str.tostring(_change5, "#.##%"), text_color = close >= o5 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table2, 1, 4, string(" 30 Day"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+ close >= o5 ? string("△ ") + str.tostring(_change5, "+#.##%") : string("▽ ") + str.tostring(_change5, "#.##%"), text_color = close >= o5 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
+table.cell(table2, 1, 4, string(" 30 Day"), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
 
 table.cell(table2, 0, 5,  
- close >= o8 ? string("△ ") + str.tostring(_change8, "+#.##%") : string("▽ ") + str.tostring(_change8, "#.##%"), text_color = close >= o8 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table2, 1, 5, string(" 90 Day"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+ close >= o8 ? string("△ ") + str.tostring(_change8, "+#.##%") : string("▽ ") + str.tostring(_change8, "#.##%"), text_color = close >= o8 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
+table.cell(table2, 1, 5, string(" 90 Day"), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
 
 table.cell(table2, 0, 6,  
- close >= o9 ? string("△ ") + str.tostring(_change9, "+#.##%") : string("▽ ") + str.tostring(_change9, "#.##%"), text_color = close >= o9 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table2, 1, 6, string(" 180 Day"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+ close >= o9 ? string("△ ") + str.tostring(_change9, "+#.##%") : string("▽ ") + str.tostring(_change9, "#.##%"), text_color = close >= o9 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
+table.cell(table2, 1, 6, string(" 180 Day"), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
 
 table.cell(table2, 0, 7,  
- close >= o6 ? string("△ ") + str.tostring(_change6, "+#.##%") : string("▽ ") + str.tostring(_change6, "#.##%"), text_color = close >= o6 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table2, 1, 7, string(" Year"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+ close >= o6 ? string("△ ") + str.tostring(_change6, "+#.##%") : string("▽ ") + str.tostring(_change6, "#.##%"), text_color = close >= o6 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
+table.cell(table2, 1, 7, string(" Year"), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
 
-table.cell(table2, 0, 8,  
- close >= o7 ? string("△ ") + str.tostring(_change7, "+#.##%") : string("▽ ") + str.tostring(_change7, "#.##%"), text_color = close >= o7 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
-table.cell(table2, 1, 8, string(" YTD"), text_color = color.white, text_size = _phone ? size.small : size.normal, text_halign = text.align_left)
+table.cell(table2, 0, 10,  
+ close >= o7 ? string("△ ") + str.tostring(_change7, "+#.##%") : string("▽ ") + str.tostring(_change7, "#.##%"), text_color = close >= o7 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
+table.cell(table2, 1, 10, string(" YTD"), text_color = color.white, text_size = _phone ? size.tiny : size.small, text_halign = text.align_left)
 
 //DAILY HIGH/LOW
-if barstate.islast and highlow == true
+if barstate.islast and _highlow == true
 
     _line5 := line.new(bar_index-25, h1, bar_index + 3, h1, xloc=xloc.bar_index, extend=extend.none, color=color.red, style=line.style_solid, width=1)
     line.delete(_line5[1])
-    lbl_5 := label.new(bar_index + 4, h1, string("Daily High"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
-    label.delete(lbl_5[1])
+    _lbl_5 := label.new(bar_index + 4, h1, string(" High"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
+    label.delete(_lbl_5[1])
 
     _line6 := line.new(bar_index-25, l1, bar_index + 3, l1, xloc=xloc.bar_index, extend=extend.none, color=color.green, style=line.style_solid, width=1)
     line.delete(_line6[1])
-    lbl_6 := label.new(bar_index + 4, l1, string("Daily Low"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
-    label.delete(lbl_6[1])
+    _lbl_6 := label.new(bar_index + 4, l1, string(" Low"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.small)
+    label.delete(_lbl_6[1])
 
 // PLOTS
-plot(intradaymas ? smoothingLine1 : na, title = "Short MA 1", style = plot.style_linebr, color = color.new(#26c6da, 0))
-plot(intradaymas ? smoothingLine2 : na, title = "Short MA 2", style = plot.style_linebr, color = color.new(#c526da, 0), linewidth = 2)
-plot(trendmas ? smoothingLine3 : na, title = "Long MA 1", style = plot.style_linebr, color = color.new(#6cffe6, 0))
-plot(trendmas ? smoothingLine4 : na, title = "Long MA 2", style = plot.style_linebr, color = color.new(#ffeb3b, 0))
-plot(trendmas ? smoothingLine5 : na, title = "Long MA 3", style = plot.style_linebr, color = color.new(#ff6d00, 0), linewidth = 2)
+plot(intradaymas ? smoothingLine1 : na, title = "Short MA 1", style = plot.style_linebr, color = color.new(#26c6da, 0), linewidth = 1)
+plot(intradaymas ? smoothingLine2 : na, title = "Short MA 2", style = plot.style_linebr, color = color.new(#c526da, 0), linewidth = 1)
+plot(trendmas ? smoothingLine3 : na, title = "Long MA 1", style = plot.style_linebr, color = color.new(#6cffe6, 0), linewidth = 1)
+plot(trendmas ? smoothingLine4 : na, title = "Long MA 2", style = plot.style_linebr, color = color.new(#ffeb3b, 0), linewidth = 1)
+plot(trendmas ? smoothingLine5 : na, title = "Long MA 3", style = plot.style_linebr, color = color.new(#ff6d00, 0), linewidth = 1)
 
-alertcondition(ta.cross(close, _entrylong), "Long Position", string("The price has crossed your Long Entry"))
-alertcondition(ta.cross(close, _entryshort), "Short Position", string("The price has crossed your Short Entry"))
