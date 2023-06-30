@@ -60,8 +60,10 @@ var line _line12 = na
 //BOOLEAN
 var bool intradaymas = input.bool(true, "Intraday Average Active", group = "Switches", tooltip = string("This is linked to the two intraday moving averages"))
 var bool trendmas = input.bool(true, "Macro Trend Average Active", group = "Switches", tooltip = string("This is linked to the three macrotrend moving averages"))
+var bool _candleoverlay = input.bool(true, "Show Candle Overlay", group = "Switches", tooltip = string("Activate to show Colored Overlays on Candles"))
 var bool _showtrade = input.bool(true, "Show Your Trade Moves?", group = "Switches", tooltip = string("Activate/Deactivate Trade Lines"))
 var bool _upscale = input.bool(false, "Enlarge Tables?", group = "Switches", tooltip = string("Activate to enlarge the size of the tables"))
+
 //LEVERAGE
 var int _leverage = input.int(1, "Leverage", minval = 1, maxval = 500, step = 1, tooltip = string("This will adjust the percentages on your entry lines"), group = "Trade Settings")
 
@@ -273,7 +275,7 @@ largestVolume = array.get(_arrayVolume, lookback - 1)
 highestHigh = array.get(_arrayHigh, lookback - 1)
 highestLow = array.get(_arrayLow, lookback - 1)
 
-plotcandle(barChange1 == largestIncreaseBarChange ? open : na, high, low, close, 
+plotcandle(_candleoverlay and barChange1 == largestIncreaseBarChange ? open : na, high, low, close, 
  color = largestIncreaseBarChange and pctChange1 == largestIncreasePctChange ? color.rgb(128,128,255,50) : color.rgb(0,0,255,50), 
  wickcolor = largestIncreaseBarChange and pctChange1 == largestIncreasePctChange ? color.rgb(128,128,255,25) : color.rgb(0,0,255,25), 
  bordercolor = largestIncreaseBarChange and pctChange1 == largestIncreasePctChange ? color.rgb(128,128,255,0) : color.rgb(0,0,255,0))
@@ -292,7 +294,7 @@ smallestVolume = array.get(_arrayVolume, lookback - 1)
 lowestHigh = array.get(_arrayHigh, lookback - 1)
 lowestLow = array.get(_arrayLow, lookback - 1)
 
-plotcandle(barChange1 == largestDecreaseBarChange ? open : na, high, low, close, 
+plotcandle(_candleoverlay and barChange1 == largestDecreaseBarChange ? open : na, high, low, close, 
  color = barChange1 == largestDecreaseBarChange and pctChange1 == largestDecreasePctChange ? color.rgb(255,255,0,50) : color.rgb(255,0,255,50), 
  wickcolor = barChange1 == largestDecreaseBarChange and pctChange1 == largestDecreasePctChange ? color.rgb(255,255,0,25) : color.rgb(255,0,255,25), 
  bordercolor = barChange1 == largestDecreaseBarChange and pctChange1 == largestDecreasePctChange ? color.rgb(255,255,0,0) : color.rgb(255,0,255,0))
