@@ -300,7 +300,7 @@ plotcandle(_candleoverlay and barChange1 == largestDecreaseBarChange ? open : na
  bordercolor = barChange1 == largestDecreaseBarChange and pctChange1 == largestDecreasePctChange ? color.rgb(255,255,0,0) : color.rgb(255,0,255,0))
 
 //TABLE #1
-_table1 = table.new(position.bottom_left, 50, 50, color.rgb(0,0,0,0), color.white, 1, color.gray, 1)
+_table1 = table.new(position.bottom_right, 50, 50, color.rgb(0,0,0,0), color.white, 1, color.gray, 1)
 
 table.cell(_table1, 0, 0, string("Lookback Period: "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
 table.cell(_table1, 0, 1, height = 1, bgcolor = color.gray)
