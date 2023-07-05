@@ -2,9 +2,7 @@
 // © LvNThL
 
 //@version=5
-indicator("CC/HMM Combo", "CC/HMM", overlay = true)
-
-lookback = input.int(10, "Lookback Period", 1, 4999, 1, group = "HMM Lookback Period")
+indicator("Compact Combo", "CC", overlay = true)
 
 //REQUESTS
 [o1] = request.security(syminfo.tickerid, "1", [open[1440]]) //24 hours
@@ -60,134 +58,10 @@ var line _line12 = na
 //BOOLEAN
 var bool intradaymas = input.bool(true, "Intraday Moving Average Active?", group = "Switches", tooltip = string("This is linked to the two intraday moving averages"))
 var bool trendmas = input.bool(true, "Macro Trend Moving Average Active?", group = "Switches", tooltip = string("This is linked to the three macrotrend moving averages"))
-var bool _candleoverlay = input.bool(true, "Show Candle Overlay?", group = "Switches", tooltip = string("Activate to show Colored Overlays on Candles"))
 var bool _showtrade = input.bool(true, "Show Your Trade Moves?", group = "Switches", tooltip = string("Activate/Deactivate Trade Lines"))
-var bool _upscale = input.bool(false, "Enlarge Tables?", group = "Switches", tooltip = string("Activate to enlarge the size of the tables"))
-var bool _changeinput = input.bool(false, "Use High/Low Values to Calculate Percentages", group = "Switches")
-//HMM
-barChange1 = ta.change(close)
-pctChange1 = (close/open) - 1
-pctChange2 = close > open ? (high/low) - 1 : (low/high) - 1
-valChange1 = close * volume
+var bool _upscale = input.bool(false, "Make Charts Bigger?", group = "Switches")
 
-_arrayChange = array.new_float()
-_arrayPercent = array.new_float()
-_arrayValue = array.new_float()
-_arrayVolume = array.new_float()
-_arrayHigh = array.new_float()
-_arrayLow = array.new_float()
 
-for i = 0 to lookback - 1
-    array.push(_arrayChange, nz(barChange1[i]))
-    array.push(_arrayPercent, nz(_changeinput ? pctChange2[i] : pctChange1[i]))
-    array.push(_arrayValue, nz(valChange1[i]))
-    array.push(_arrayVolume, nz(volume[i]))
-    array.push(_arrayHigh, nz(high[i]))
-    array.push(_arrayLow, nz(low[i]))
-
-currentBarChange = array.get(_arrayChange, 0)
-currentPctChange = array.get(_arrayPercent, 0)
-currentValue = array.get(_arrayValue, 0)
-currentVolume = array.get(_arrayVolume, 0)
-currentHigh = array.get(_arrayHigh, 0)
-currentLow = array.get(_arrayLow, 0)
-
-array.sort(_arrayChange, order.ascending)
-array.sort(_arrayPercent, order.ascending)
-array.sort(_arrayValue, order.ascending)
-array.sort(_arrayVolume, order.ascending)
-array.sort(_arrayHigh, order.ascending)
-array.sort(_arrayLow, order.ascending)
-
-largestIncreaseBarChange = array.get(_arrayChange, lookback - 1)
-largestIncreasePctChange = array.get(_arrayPercent, lookback - 1)
-largestValue = array.get(_arrayValue, lookback - 1)
-largestVolume = array.get(_arrayVolume, lookback - 1)
-highestHigh = array.get(_arrayHigh, lookback - 1)
-highestLow = array.get(_arrayLow, lookback - 1)
-
-plotcandle(_candleoverlay and barChange1 == largestIncreaseBarChange ? open : na, high, low, close, 
- color = (barChange1 == largestIncreaseBarChange and pctChange1 == largestIncreasePctChange) or (barChange1 == largestIncreaseBarChange and pctChange2 == largestIncreasePctChange) ? color.rgb(128,128,255,50) : color.rgb(0,0,255,50), 
- wickcolor = (barChange1 == largestIncreaseBarChange and pctChange1 == largestIncreasePctChange) or (barChange1 == largestIncreaseBarChange and pctChange2 == largestIncreasePctChange)? color.rgb(128,128,255,25) : color.rgb(0,0,255,25), 
- bordercolor = (barChange1 == largestIncreaseBarChange and pctChange1 == largestIncreasePctChange) or (barChange1 == largestIncreaseBarChange and pctChange2 == largestIncreasePctChange)? color.rgb(128,128,255,0) : color.rgb(0,0,255,0))
-
-array.sort(_arrayChange, order.descending)
-array.sort(_arrayPercent, order.descending)
-array.sort(_arrayValue, order.descending)
-array.sort(_arrayVolume, order.descending)
-array.sort(_arrayHigh, order.descending)
-array.sort(_arrayLow, order.descending)
-
-largestDecreaseBarChange = array.get(_arrayChange, lookback - 1)
-largestDecreasePctChange = array.get(_arrayPercent, lookback - 1)
-smallestValue = array.get(_arrayValue, lookback - 1)
-smallestVolume = array.get(_arrayVolume, lookback - 1)
-lowestHigh = array.get(_arrayHigh, lookback - 1)
-lowestLow = array.get(_arrayLow, lookback - 1)
-
-plotcandle(_candleoverlay and barChange1 == largestDecreaseBarChange ? open : na, high, low, close, 
- color = (barChange1 == largestDecreaseBarChange and pctChange1 == largestDecreasePctChange) or (barChange1 == largestDecreaseBarChange and pctChange2 == largestDecreasePctChange) ? color.rgb(255,255,0,50) : color.rgb(255,0,255,50), 
- wickcolor = (barChange1 == largestDecreaseBarChange and pctChange1 == largestDecreasePctChange) or (barChange1 == largestDecreaseBarChange and pctChange2 == largestDecreasePctChange)  ? color.rgb(255,255,0,25) : color.rgb(255,0,255,25), 
- bordercolor = (barChange1 == largestDecreaseBarChange and pctChange1 == largestDecreasePctChange) or (barChange1 == largestDecreaseBarChange and pctChange2 == largestDecreasePctChange)  ? color.rgb(255,255,0,0) : color.rgb(255,0,255,0))
-
-//TABLE #1
-_table1 = table.new(position.bottom_right, 50, 50, color.rgb(0,0,0,0), color.white, 1, color.gray, 1)
-
-table.cell(_table1, 0, 0, string("Lookback Period: "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 1, height = 1, bgcolor = color.gray)
-table.cell(_table1, 0, 2, string("Current Value: "), bgcolor = color.rgb(33, 149, 243, 60), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.normal)
-table.cell(_table1, 0, 3, height = 1, bgcolor = color.gray)
-table.cell(_table1, 0, 4, string("Bar Largest Total Value($): "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 5, string("Current Bar Total Value($): "), bgcolor = color.rgb(33, 149, 243, 60), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 6, string("Bar Smallest Total Value($): "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 7, height = 1, bgcolor = color.gray)
-table.cell(_table1, 0, 8, string("Largest Increase In Value($): "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 9, string("Current Bar Change($): "), bgcolor = color.rgb(33, 149, 243, 60), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 10, string("Largest Decrease In Value($): "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 11, height = 1, bgcolor = color.gray)
-table.cell(_table1, 0, 12, string("Largest Increase In Value(%): "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 13, string("Current Bar Change(%): "), bgcolor = color.rgb(33, 149, 243, 60), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 14, string("Largest Decrease In Value(%): "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 15, height = 1, bgcolor = color.gray)
-table.cell(_table1, 0, 16, string("Bar Largest Volume: "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 17, string("Current Bar Volume: "), bgcolor = color.rgb(33, 149, 243, 60), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 18, string("Bar Smallest Volume: "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 19, height = 1, bgcolor = color.gray)
-table.cell(_table1, 0, 20, string("Highest High Value($): "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 21, string("Current High Value($): "), bgcolor = color.rgb(33, 149, 243, 60), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 22, string("Lowest High Value($): "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 23, height = 1, bgcolor = color.gray)
-table.cell(_table1, 0, 24, string("Highest Low Value($): "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 25, string("Current Low Value($): "), bgcolor = color.rgb(33, 149, 243, 60), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 0, 26, string("Lowest Low Value($): "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-
-table.cell(_table1, 1, 0, str.tostring(lookback, "#,###") + string(" ( ") + string(timeframe.period) + string(" ) "), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 1, height = 1, bgcolor = color.gray)
-table.cell(_table1, 1, 2, str.tostring(close, "$###,###,###,###,###,###.###"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.large : size.normal)
-table.cell(_table1, 1, 3, height = 1, bgcolor = color.gray)
-table.cell(_table1, 1, 4, str.tostring(largestValue, "$###,###,###,###,###.##"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 5, str.tostring(currentValue, "$###,###,###,###,###.##"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 6, str.tostring(smallestValue, "$###,###,###,###,###.##"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 7, height = 1, bgcolor = color.gray)
-table.cell(_table1, 1, 8, str.tostring(largestIncreaseBarChange, "$###,###,###,###,###.####"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 9, str.tostring(currentBarChange, "$###,###,###,###,###.####"), text_color = currentBarChange > 0 ? color.green : color.red, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 10, str.tostring(largestDecreaseBarChange, "$###,###,###,###,###.####"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 11, height = 1, bgcolor = color.gray)
-table.cell(_table1, 1, 12, str.tostring(largestIncreasePctChange, "###,###,###,###,###.##%"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 13, str.tostring(currentPctChange, "###,###,###,###,###.##%"), text_color = currentPctChange > 0 ? color.green : color.red, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 14, str.tostring(largestDecreasePctChange, "###,###,###,###,###.##%"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 15, height = 1, bgcolor = color.gray)
-table.cell(_table1, 1, 16, str.tostring(largestVolume, "###,###,###,###,###,###.###"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 17, str.tostring(currentVolume, "###,###,###,###,###,###.###"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 18, str.tostring(smallestVolume, "###,###,###,###,###,###.###"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 19, height = 1, bgcolor = color.gray)
-table.cell(_table1, 1, 20, str.tostring(highestHigh, "$###,###,###,###,###,###.####"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 21, str.tostring(currentHigh, "$###,###,###,###,###,###.####"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 22, str.tostring(lowestHigh, "$###,###,###,###,###,###.####"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 23, height = 1, bgcolor = color.gray)
-table.cell(_table1, 1, 24, str.tostring(highestLow, "$###,###,###,###,###,###.####"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 25, str.tostring(currentLow, "$###,###,###,###,###,###.####"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
-table.cell(_table1, 1, 26, str.tostring(lowestLow, "$###,###,###,###,###,###.####"), text_color = color.white, text_halign = text.align_center, text_size = _upscale ? size.small : size.tiny)
 
 //LEVERAGE
 var int _leverage = input.int(1, "Leverage", minval = 1, maxval = 500, step = 1, tooltip = string("This will adjust the percentages on your entry lines"), group = "Trade Settings")
@@ -247,6 +121,7 @@ else
     _percentshorttakeprofit3 := (_takeprofitshort3/ _entryshort) -1
 
 //LONG ENTRY
+
 if _entrylong and _showtrade == true
     _line1 := line.new(bar_index-25, _entrylong, bar_index + 3, _entrylong, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,0,255,0), style=line.style_dotted, width=2)
     line.delete(_line1[1])
@@ -277,7 +152,6 @@ if _liquidationlong and _showtrade == true
     line.delete(_line6[1])
     _lbl_6 := label.new(bar_index + 4, _liquidationlong, string("Long Liquidation") + string(" ") + string("(") + str.tostring((_liquidationlong / _entrylong) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.tiny)
     label.delete(_lbl_6[1])
-
 //SHORT ENTRY
 if _entryshort and _showtrade == true
     _line7 := line.new(bar_index-25, _entryshort, bar_index + 3, _entryshort, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,0,255,0), style=line.style_dotted, width=2)
@@ -363,48 +237,39 @@ plot(trendmas ? smoothingLine5 : na, title = "Long MA 3", style = plot.style_lin
 //TABLE #2
 _table2 = table.new(position.top_right, 50, 50, color.rgb(0,0,0,0), color.white, 1, color.gray, 1)
 
+
 table.cell(_table2, 0, 0,
  string("Rolling"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
 table.cell(_table2, 1, 0,
  string("Percent"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-
 table.cell(_table2, 1, 1, 
  close >= o1 ? string("△ ") + str.tostring(_change1, "+#.##%") : string("▽ ") + str.tostring(_change1, "#.##%"), text_color = close >= o1 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
 table.cell(_table2, 0, 1, string(" 24-Hour"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-
 table.cell(_table2, 1, 2, 
  close >= o3 ? string("△ ") + str.tostring(_change3, "+#.##%") : string("▽ ") + str.tostring(_change3, "#.##%"), text_color = close >= o3 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
 table.cell(_table2, 0, 2, string(" 3 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-
 table.cell(_table2, 1, 3, 
  close >= o4 ? string("△ ") + str.tostring(_change4, "+#.##%") : string("▽ ") + str.tostring(_change4, "#.##%"), text_color = close >= o4 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
 table.cell(_table2, 0, 3, string(" 7 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-
 table.cell(_table2, 1, 4, 
  close >= o5 ? string("△ ") + str.tostring(_change5, "+#.##%") : string("▽ ") + str.tostring(_change5, "#.##%"), text_color = close >= o5 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
 table.cell(_table2, 0, 4, string(" 30 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-
 table.cell(_table2, 1, 5,  
  close >= o8 ? string("△ ") + str.tostring(_change8, "+#.##%") : string("▽ ") + str.tostring(_change8, "#.##%"), text_color = close >= o8 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
 table.cell(_table2, 0, 5, string(" 90 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-
 table.cell(_table2, 1, 6,  
  close >= o9 ? string("△ ") + str.tostring(_change9, "+#.##%") : string("▽ ") + str.tostring(_change9, "#.##%"), text_color = close >= o9 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
 table.cell(_table2, 0, 6, string(" 180 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-
 table.cell(_table2, 1, 7,  
  close >= o6 ? string("△ ") + str.tostring(_change6, "+#.##%") : string("▽ ") + str.tostring(_change6, "#.##%"), text_color = close >= o6 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
 table.cell(_table2, 0, 7, string(" Year"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-
 table.cell(_table2, 0, 8,
  string("Static"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
 table.cell(_table2, 1, 8,
  string("Percent"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-
 table.cell(_table2, 1, 9, 
  close >= o2 ? string("△ ") + str.tostring(_change2, "+#.##%") : string("▽ ") + str.tostring(_change2, "#.##%"), text_color = close >= o2 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
 table.cell(_table2, 0, 9, string(" Day"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-
 table.cell(_table2, 1, 10,  
  close >= o7 ? string("△ ") + str.tostring(_change7, "+#.##%") : string("▽ ") + str.tostring(_change7, "#.##%"), text_color = close >= o7 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
 table.cell(_table2, 0, 10, string(" YTD"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
