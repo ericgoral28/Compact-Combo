@@ -125,63 +125,63 @@ else
 if _entrylong and _showtrade == true
     _line1 := line.new(bar_index-25, _entrylong, bar_index + 3, _entrylong, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,0,255,0), style=line.style_dotted, width=2)
     line.delete(_line1[1])
-    _lbl_1 := label.new(bar_index + 4, _entrylong, string("Long Entry") + string(" ") + string("(") + str.tostring(_percentlong, "#.##%") + string(" ") + string("To Current Price") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.tiny)
+    _lbl_1 := label.new(bar_index + 4, _entrylong, string("Long Entry") + string(" ") + string("(") + str.tostring(_percentlong, "#.##%") + string(" ") + string("To Current Price") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _upscale ? size.normal : size.tiny)
     label.delete(_lbl_1[1])
 if _takeprofitlong1 and _showtrade == true
     _line2 := line.new(bar_index-25, _takeprofitlong1, bar_index + 3, _takeprofitlong1, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,255,0,0), style=line.style_dotted, width=2)
     line.delete(_line2[1])
-    _lbl_2 := label.new(bar_index + 4, _takeprofitlong1, string("Long Take Profit 1") + string(" ") + string("(") + str.tostring(_percentlongtakeprofit1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.tiny)
+    _lbl_2 := label.new(bar_index + 4, _takeprofitlong1, string("Long Take Profit 1") + string(" ") + string("(") + str.tostring(_percentlongtakeprofit1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _upscale ? size.normal : size.tiny)
     label.delete(_lbl_2[1])
 if _takeprofitlong2 and _showtrade == true
     _line3 := line.new(bar_index-25, _takeprofitlong2, bar_index + 3, _takeprofitlong2, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,255,0,0), style=line.style_dotted, width=2)
     line.delete(_line3[1])
-    _lbl_3 := label.new(bar_index + 4, _takeprofitlong2, string("Long Take Profit 2") + string(" ") + string("(") + str.tostring(_percentlongtakeprofit2, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.tiny)
+    _lbl_3 := label.new(bar_index + 4, _takeprofitlong2, string("Long Take Profit 2") + string(" ") + string("(") + str.tostring(_percentlongtakeprofit2, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _upscale ? size.normal : size.tiny)
     label.delete(_lbl_3[1])
 if _takeprofitlong3 and _showtrade == true
     _line4 := line.new(bar_index-25, _takeprofitlong3, bar_index + 3, _takeprofitlong3, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,255,0,0), style=line.style_dotted, width=2)
     line.delete(_line4[1])
-    _lbl_4 := label.new(bar_index + 4, _takeprofitlong3, string("Long Take Profit 3") + string(" ") + string("(") + str.tostring(_percentlongtakeprofit3, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.tiny)
+    _lbl_4 := label.new(bar_index + 4, _takeprofitlong3, string("Long Take Profit 3") + string(" ") + string("(") + str.tostring(_percentlongtakeprofit3, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _upscale ? size.normal : size.tiny)
     label.delete(_lbl_4[1])
 if _stoplosslong and _showtrade == true
     _line5 := line.new(bar_index-25, _stoplosslong, bar_index + 3, _stoplosslong, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(255,0,0,0), style=line.style_dotted, width=2)
     line.delete(_line5[1])
-    _lbl_5 := label.new(bar_index + 4, _stoplosslong, string("Long Stop Loss") + string(" ") + string("(") + str.tostring((_stoplosslong / _entrylong) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.tiny)
+    _lbl_5 := label.new(bar_index + 4, _stoplosslong, string("Long Stop Loss") + string(" ") + string("(") + str.tostring((_stoplosslong / _entrylong) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _upscale ? size.normal : size.tiny)
     label.delete(_lbl_5[1])
 if _liquidationlong and _showtrade == true
     _line6 := line.new(bar_index-25, _liquidationlong, bar_index + 3, _liquidationlong, xloc = xloc.bar_index, extend = extend.none, color = color.purple, style=line.style_dotted, width = 2)
     line.delete(_line6[1])
-    _lbl_6 := label.new(bar_index + 4, _liquidationlong, string("Long Liquidation") + string(" ") + string("(") + str.tostring((_liquidationlong / _entrylong) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.tiny)
+    _lbl_6 := label.new(bar_index + 4, _liquidationlong, string("Long Liquidation") + string(" ") + string("(") + str.tostring((_liquidationlong / _entrylong) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _upscale ? size.normal : size.tiny)
     label.delete(_lbl_6[1])
 //SHORT ENTRY
 if _entryshort and _showtrade == true
     _line7 := line.new(bar_index-25, _entryshort, bar_index + 3, _entryshort, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,0,255,0), style=line.style_dotted, width=2)
     line.delete(_line7[1])
-    _lbl_7 := label.new(bar_index + 4, _entryshort, string("Short Entry") + string(" ") + string("(") + str.tostring(_percentshort, "#.##%") + string(" ") + string("To Current Price") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.tiny)
+    _lbl_7 := label.new(bar_index + 4, _entryshort, string("Short Entry") + string(" ") + string("(") + str.tostring(_percentshort, "#.##%") + string(" ") + string("To Current Price") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _upscale ? size.normal : size.tiny)
     label.delete(_lbl_7[1])
 if _takeprofitshort1 and _showtrade == true
     _line8 := line.new(bar_index-25, _takeprofitshort1, bar_index + 3, _takeprofitshort1, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,255,0,0), style=line.style_dotted, width=2)
     line.delete(_line8[1])
-    _lbl_8 := label.new(bar_index + 4, _takeprofitshort1, string("Short Take Profit 1") + string(" ") + string("(") + str.tostring(_percentshorttakeprofit1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.tiny)
+    _lbl_8 := label.new(bar_index + 4, _takeprofitshort1, string("Short Take Profit 1") + string(" ") + string("(") + str.tostring(_percentshorttakeprofit1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _upscale ? size.normal : size.tiny)
     label.delete(_lbl_8[1])
 if _takeprofitshort2 and _showtrade == true
     _line3 := line.new(bar_index-25, _takeprofitshort2, bar_index + 3, _takeprofitshort2, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,255,0,0), style=line.style_dotted, width=2)
     line.delete(_line3[1])
-    _lbl_3 := label.new(bar_index + 4, _takeprofitshort2, string("Short Take Profit 2") + string(" ") + string("(") + str.tostring(_percentshorttakeprofit2, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.tiny)
+    _lbl_3 := label.new(bar_index + 4, _takeprofitshort2, string("Short Take Profit 2") + string(" ") + string("(") + str.tostring(_percentshorttakeprofit2, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _upscale ? size.normal : size.tiny)
     label.delete(_lbl_3[1])
 if _takeprofitshort3 and _showtrade == true
     _line10 := line.new(bar_index-25, _takeprofitshort3, bar_index + 3, _takeprofitshort3, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(0,255,0,0), style=line.style_dotted, width=2)
     line.delete(_line10[1])
-    _lbl_10 := label.new(bar_index + 4, _takeprofitshort3, string("Short Take Profit 3") + string(" ") + string("(") + str.tostring(_percentshorttakeprofit3, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.tiny)
+    _lbl_10 := label.new(bar_index + 4, _takeprofitshort3, string("Short Take Profit 3") + string(" ") + string("(") + str.tostring(_percentshorttakeprofit3, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _upscale ? size.normal : size.tiny)
     label.delete(_lbl_10[1])
 if _stoplossshort and _showtrade == true
     _line11 := line.new(bar_index-25, _stoplossshort, bar_index + 3, _stoplossshort, xloc=xloc.bar_index, extend=extend.none, color= color.rgb(255,0,0,0), style=line.style_dotted, width=2)
     line.delete(_line11[1])
-    _lbl_11 := label.new(bar_index + 4, _stoplossshort, string("Short Stop Loss") + string(" ") + string("(") + str.tostring((_stoplossshort/ _entryshort) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.tiny)
+    _lbl_11 := label.new(bar_index + 4, _stoplossshort, string("Short Stop Loss") + string(" ") + string("(") + str.tostring((_stoplossshort/ _entryshort) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _upscale ? size.normal : size.tiny)
     label.delete(_lbl_11[1])
 if _liquidationshort and _showtrade == true
     _line12 := line.new(bar_index-25, _liquidationshort, bar_index + 3, _liquidationshort, xloc = xloc.bar_index, extend = extend.none, color = color.purple, style=line.style_dotted, width = 2)
     line.delete(_line12[1])
-    _lbl_12 := label.new(bar_index + 4, _liquidationshort, string("Short Liquidation") + string(" ") + string("(") + str.tostring((_liquidationshort/ _entryshort) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = size.tiny)
+    _lbl_12 := label.new(bar_index + 4, _liquidationshort, string("Short Liquidation") + string(" ") + string("(") + str.tostring((_liquidationshort/ _entryshort) -1, "#.##%") + string(" ") + string("From Entry") + string(")"), style = label.style_label_left, color = color.rgb(0,0,0,100), textcolor = color.silver, size = _upscale ? size.normal : size.tiny)
     label.delete(_lbl_12[1])
 
 //MOVING AVERAGEs
@@ -227,49 +227,55 @@ smoothingLine4 = ma(sma4, smoothingLength3, typeMA)
 smoothingLine5 = ma(sma5, smoothingLength3, typeMA)
 
 // PLOTS
-plot(intradaymas ? smoothingLine1 : na, title = "Short MA 1", style = plot.style_linebr, color = color.new(#26c6da, 0), linewidth = 1)
-plot(intradaymas ? smoothingLine2 : na, title = "Short MA 2", style = plot.style_linebr, color = color.new(#c526da, 0), linewidth = 1)
-plot(trendmas ? smoothingLine3 : na, title = "Long MA 1", style = plot.style_linebr, color = color.new(#6cffe6, 0), linewidth = 1)
-plot(trendmas ? smoothingLine4 : na, title = "Long MA 2", style = plot.style_linebr, color = color.new(#ffeb3b, 0), linewidth = 1)
-plot(trendmas ? smoothingLine5 : na, title = "Long MA 3", style = plot.style_linebr, color = color.new(#ff6d00, 0), linewidth = 1)
+plot(intradaymas ? smoothingLine1 : na, title = "Short MA 1", style = plot.style_linebr, color = close > smoothingLine1 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), linewidth = 1)
+plot(intradaymas ? smoothingLine2 : na, title = "Short MA 2", style = plot.style_linebr, color = close > smoothingLine2 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), linewidth = 1)
+plot(trendmas ? smoothingLine3 : na, title = "Long MA 1", style = plot.style_linebr, color = close > smoothingLine3 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), linewidth = 1)
+plot(trendmas ? smoothingLine4 : na, title = "Long MA 2", style = plot.style_linebr, color = close > smoothingLine4 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), linewidth = 1)
+plot(trendmas ? smoothingLine5 : na, title = "Long MA 3", style = plot.style_linebr, color = close > smoothingLine5 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), linewidth = 1)
 
 
 //TABLE #2
 _table2 = table.new(position.top_right, 50, 50, color.rgb(0,0,0,0), color.white, 1, color.gray, 1)
+_table3 = table.new(position.bottom_right, 50, 50, color.rgb(0,0,0,0), color.white, 1, color.gray, 1)
 
 
 table.cell(_table2, 0, 0,
- string("Rolling"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
+ string("Rolling"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
 table.cell(_table2, 1, 0,
- string("Percent"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
+ string("Percent"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
 table.cell(_table2, 1, 1, 
- close >= o1 ? string("△ ") + str.tostring(_change1, "+#.##%") : string("▽ ") + str.tostring(_change1, "#.##%"), text_color = close >= o1 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-table.cell(_table2, 0, 1, string(" 24-Hour"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
+ close >= o1 ? string("△ ") + str.tostring(_change1, "+#.##%") : string("▽ ") + str.tostring(_change1, "#.##%"), text_color = close >= o1 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
+table.cell(_table2, 0, 1, string(" 24-Hour"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
 table.cell(_table2, 1, 2, 
- close >= o3 ? string("△ ") + str.tostring(_change3, "+#.##%") : string("▽ ") + str.tostring(_change3, "#.##%"), text_color = close >= o3 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-table.cell(_table2, 0, 2, string(" 3 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
+ close >= o3 ? string("△ ") + str.tostring(_change3, "+#.##%") : string("▽ ") + str.tostring(_change3, "#.##%"), text_color = close >= o3 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
+table.cell(_table2, 0, 2, string(" 3 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
 table.cell(_table2, 1, 3, 
- close >= o4 ? string("△ ") + str.tostring(_change4, "+#.##%") : string("▽ ") + str.tostring(_change4, "#.##%"), text_color = close >= o4 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-table.cell(_table2, 0, 3, string(" 7 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
+ close >= o4 ? string("△ ") + str.tostring(_change4, "+#.##%") : string("▽ ") + str.tostring(_change4, "#.##%"), text_color = close >= o4 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
+table.cell(_table2, 0, 3, string(" 7 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
 table.cell(_table2, 1, 4, 
- close >= o5 ? string("△ ") + str.tostring(_change5, "+#.##%") : string("▽ ") + str.tostring(_change5, "#.##%"), text_color = close >= o5 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-table.cell(_table2, 0, 4, string(" 30 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
+ close >= o5 ? string("△ ") + str.tostring(_change5, "+#.##%") : string("▽ ") + str.tostring(_change5, "#.##%"), text_color = close >= o5 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
+table.cell(_table2, 0, 4, string(" 30 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
 table.cell(_table2, 1, 5,  
- close >= o8 ? string("△ ") + str.tostring(_change8, "+#.##%") : string("▽ ") + str.tostring(_change8, "#.##%"), text_color = close >= o8 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-table.cell(_table2, 0, 5, string(" 90 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
+ close >= o8 ? string("△ ") + str.tostring(_change8, "+#.##%") : string("▽ ") + str.tostring(_change8, "#.##%"), text_color = close >= o8 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
+table.cell(_table2, 0, 5, string(" 90 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
 table.cell(_table2, 1, 6,  
- close >= o9 ? string("△ ") + str.tostring(_change9, "+#.##%") : string("▽ ") + str.tostring(_change9, "#.##%"), text_color = close >= o9 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-table.cell(_table2, 0, 6, string(" 180 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
+ close >= o9 ? string("△ ") + str.tostring(_change9, "+#.##%") : string("▽ ") + str.tostring(_change9, "#.##%"), text_color = close >= o9 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
+table.cell(_table2, 0, 6, string(" 180 Day"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
 table.cell(_table2, 1, 7,  
- close >= o6 ? string("△ ") + str.tostring(_change6, "+#.##%") : string("▽ ") + str.tostring(_change6, "#.##%"), text_color = close >= o6 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-table.cell(_table2, 0, 7, string(" Year"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
+ close >= o6 ? string("△ ") + str.tostring(_change6, "+#.##%") : string("▽ ") + str.tostring(_change6, "#.##%"), text_color = close >= o6 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
+table.cell(_table2, 0, 7, string(" Year"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
 table.cell(_table2, 0, 8,
- string("Static"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
+ string("Static"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
 table.cell(_table2, 1, 8,
- string("Percent"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
+ string("Percent"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
 table.cell(_table2, 1, 9, 
- close >= o2 ? string("△ ") + str.tostring(_change2, "+#.##%") : string("▽ ") + str.tostring(_change2, "#.##%"), text_color = close >= o2 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-table.cell(_table2, 0, 9, string(" Day"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
+ close >= o2 ? string("△ ") + str.tostring(_change2, "+#.##%") : string("▽ ") + str.tostring(_change2, "#.##%"), text_color = close >= o2 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
+table.cell(_table2, 0, 9, string(" Day"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
 table.cell(_table2, 1, 10,  
- close >= o7 ? string("△ ") + str.tostring(_change7, "+#.##%") : string("▽ ") + str.tostring(_change7, "#.##%"), text_color = close >= o7 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
-table.cell(_table2, 0, 10, string(" YTD"), text_color = color.white, text_size = _upscale ? size.normal : size.small, text_halign = text.align_center)
+ close >= o7 ? string("△ ") + str.tostring(_change7, "+#.##%") : string("▽ ") + str.tostring(_change7, "#.##%"), text_color = close >= o7 ? color.rgb(0,255,0,0) : color.rgb(255,0,0,0), text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
+table.cell(_table2, 0, 10, string(" YTD"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
+
+// Table 3 :D
+table.cell(_table3, 0, 0,
+ string("Total Value"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
+table.cell(_table3, 0, 1, str.tostring(_totalvalue, "$#,###"), text_color = color.white, text_size = _upscale ? size.normal : size.tiny, text_halign = text.align_center)
